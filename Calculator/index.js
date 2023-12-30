@@ -3,17 +3,20 @@ var RadianMode = true;
 var AnswerSection = document.getElementById('AnswerSection');
 var RadorDegEl = document.getElementById("RadorDeg");
 var AcEl = document.getElementById("AC");
-var allButtons = document.querySelectorAll('button');
-var πEl = document.getElementById("π");
-var eEl = document.getElementById("e");
-var EEl = document.getElementById("E");
-var FactorialEl = document.getElementById("!");
+var allButtons = document.querySelectorAll("button");
+var πEl = document.getElementById('π');
+var eEl = document.getElementById('e');
+var EEl = document.getElementById('E');
+var InvEl = document.getElementById("Inv");
+var FactorialEl = document.getElementById('!');
 var LeftParanthesesCount = 0;
+var changeOperators = ['log', 'sin', 'cos', 'tan', '√'];
+var inverseOperators = ["10ˣ", "sin⁻¹", "cos⁻¹", "tan⁻¹", "x²"]
 
 // Event listeners setup
 
 allButtons.forEach(function (button) {
-    if (button.id == "RadorDeg"){
+    if (button.id == "RadorDeg" || button.id == "Inv"){
         return
     }
     button.addEventListener('click', handleButtonClick);
@@ -54,13 +57,16 @@ if (RadorDegEl) {
     RadorDegEl.addEventListener("click", toggleRadianMode);
 }
 
+if (InvEl){
+    InvEl.addEventListener("click", toggleInvMode);
+}
 // Operators and parentheses event listeners
 var operators = ['+', '-', 'x', '÷', '.', '%'];
 operators.forEach(function (operator) {
     addOperatorEventListener(operator);
 });
 
-var leftParanOperators = ['ln', 'log', 'sin', 'cos', 'tan', '√'];
+var leftParanOperators = ['ln','log', 'sin', 'cos', 'tan', '√', '^'];
 leftParanOperators.forEach(function (operator) {
     addLeftParanOperator(operator);
 });
@@ -155,7 +161,16 @@ function addOperatorEventListener(operator) {
 function addLeftParanOperator(operator) {
     if (document.getElementById(operator)) {
         document.getElementById(operator).addEventListener("click", function () {
-            AnswerSection.value += operator + "(";
+            if (InvEl.innerHTML === "<b>Inv</b>" && operator === "log"){
+                AnswerSection.value += "10^("
+                LeftParanthesesCount++;
+                return
+            }
+            if (InvEl.innerHTML === "<b>Inv</b>" && operator === '√'){
+                AnswerSection.value += "²"
+                return
+            }
+            AnswerSection.value += document.getElementById(operator).innerHTML + "(";
             LeftParanthesesCount++;
         });
     }
@@ -186,6 +201,22 @@ function toggleRadianMode() {
         } else {
             RadorDegEl.innerHTML = "<b>Rad</b> | Deg";
             RadianMode = true;
+        }
+    }
+}
+
+function toggleInvMode() {
+    if (InvEl){
+        if (InvEl.innerHTML === "Inv"){
+            InvEl.innerHTML = "<b>Inv</b>"
+            for (let i = 0; i < changeOperators.length; i++){
+                document.getElementById(changeOperators[i]).innerHTML = inverseOperators[i];
+            }
+        }else{
+            InvEl.innerHTML = "Inv"
+            for (let i = 0; i < inverseOperators.length; i++){
+                document.getElementById(changeOperators[i]).innerHTML = changeOperators[i];
+            }
         }
     }
 }
